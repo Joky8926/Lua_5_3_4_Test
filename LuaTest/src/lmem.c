@@ -64,7 +64,7 @@ void *luaM_growaux_ (lua_State *L, void *block, int *size, size_t size_elems,
   return newblock;
 }
 
-
+// 申请的内存超出限制错误
 l_noret luaM_toobig (lua_State *L) {
   luaG_runerror(L, "memory allocation error: block too big");
 }
@@ -74,6 +74,7 @@ l_noret luaM_toobig (lua_State *L) {
 /*
 ** generic allocation routine.
 */
+//r1
 void *luaM_realloc_ (lua_State *L, void *block, size_t osize, size_t nsize) {
   void *newblock;
   global_State *g = G(L);
@@ -87,7 +88,7 @@ void *luaM_realloc_ (lua_State *L, void *block, size_t osize, size_t nsize) {
   if (newblock == NULL && nsize > 0) {
     lua_assert(nsize > realosize);  /* cannot fail when shrinking a block */
     if (g->version) {  /* is state fully built? */
-      luaC_fullgc(L, 1);  /* try to free some memory... */
+      luaC_fullgc(L, 1);  /* try to free some memory... */  //r1
       newblock = (*g->frealloc)(g->ud, block, osize, nsize);  /* try again */
     }
     if (newblock == NULL)

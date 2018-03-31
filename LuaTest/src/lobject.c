@@ -386,10 +386,10 @@ void luaO_tostring (lua_State *L, StkId obj) {
   setsvalue2s(L, obj, luaS_newlstr(L, buff, len));
 }
 
-
+// r1
 static void pushstr (lua_State *L, const char *str, size_t l) {
   setsvalue2s(L, L->top, luaS_newlstr(L, str, l));
-  luaD_inctop(L);
+  luaD_inctop(L);//r1
 }
 
 
@@ -397,12 +397,13 @@ static void pushstr (lua_State *L, const char *str, size_t l) {
 ** this function handles only '%d', '%c', '%f', '%p', and '%s'
    conventional formats, plus Lua-specific '%I' and '%U'
 */
+//r1
 const char *luaO_pushvfstring (lua_State *L, const char *fmt, va_list argp) {
   int n = 0;
   for (;;) {
     const char *e = strchr(fmt, '%');
     if (e == NULL) break;
-    pushstr(L, fmt, e - fmt);
+    pushstr(L, fmt, e - fmt);   // r1
     switch (*(e+1)) {
       case 's': {  /* zero-terminated string */
         const char *s = va_arg(argp, char *);

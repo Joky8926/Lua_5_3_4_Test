@@ -20,12 +20,14 @@
 ** 'condmovestack' is used in heavy tests to force a stack reallocation
 ** at every check.
 */
+//r1
 #define luaD_checkstackaux(L,n,pre,pos)  \
 	if (L->stack_last - L->top <= (n)) \
-	  { pre; luaD_growstack(L, n); pos; } else { condmovestack(L,pre,pos); }
+	  { pre; luaD_growstack(L, n)/*r1*/; pos; } else { condmovestack(L,pre,pos); }
 
 /* In general, 'pre'/'pos' are empty (nothing to save) */
-#define luaD_checkstack(L,n)	luaD_checkstackaux(L,n,(void)0,(void)0)
+//r1
+#define luaD_checkstack(L,n)	luaD_checkstackaux(L,n,(void)0,(void)0)//r1
 
 
 
@@ -50,7 +52,7 @@ LUAI_FUNC void luaD_reallocstack (lua_State *L, int newsize);
 LUAI_FUNC void luaD_growstack (lua_State *L, int n);
 LUAI_FUNC void luaD_shrinkstack (lua_State *L);
 LUAI_FUNC void luaD_inctop (lua_State *L);
-
+// Å×³öÒì³£
 LUAI_FUNC l_noret luaD_throw (lua_State *L, int errcode);
 LUAI_FUNC int luaD_rawrunprotected (lua_State *L, Pfunc f, void *ud);
 

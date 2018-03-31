@@ -78,6 +78,7 @@ typedef struct LG {
   { size_t t = cast(size_t, e); \
     memcpy(b + p, &t, sizeof(t)); p += sizeof(t); }
 
+// 生成种子
 static unsigned int makeseed (lua_State *L) {
   char buff[4 * sizeof(size_t)];
   unsigned int h = luai_makeseed();
@@ -147,7 +148,7 @@ void luaE_shrinkCI (lua_State *L) {
   }
 }
 
-
+// 初始化stack
 static void stack_init (lua_State *L1, lua_State *L) {
   int i; CallInfo *ci;
   /* initialize stack array */
@@ -181,10 +182,11 @@ static void freestack (lua_State *L) {
 /*
 ** Create registry table and its predefined values
 */
+// r1
 static void init_registry (lua_State *L, global_State *g) {
   TValue temp;
   /* create registry */
-  Table *registry = luaH_new(L);
+  Table *registry = luaH_new(L);    // r1
   sethvalue(L, &g->l_registry, registry);
   luaH_resize(L, registry, LUA_RIDX_LAST, 0);
   /* registry[LUA_RIDX_MAINTHREAD] = L */
@@ -200,11 +202,12 @@ static void init_registry (lua_State *L, global_State *g) {
 ** open parts of the state that may cause memory-allocation errors.
 ** ('g->version' != NULL flags that the state was completely build)
 */
+// r1
 static void f_luaopen (lua_State *L, void *ud) {
   global_State *g = G(L);
   UNUSED(ud);
   stack_init(L, L);  /* init stack */
-  init_registry(L, g);
+  init_registry(L, g);  // r1
   luaS_init(L);
   luaT_init(L);
   luaX_init(L);
@@ -217,6 +220,7 @@ static void f_luaopen (lua_State *L, void *ud) {
 /*
 ** preinitialize a thread with consistent values without allocating
 ** any memory (to avoid errors)
+** 预初始化lua_State
 */
 static void preinit_thread (lua_State *L, global_State *g) {
   G(L) = g;
@@ -291,12 +295,12 @@ void luaE_freethread (lua_State *L, lua_State *L1) {
   luaM_free(L, l);
 }
 
-
+// r1
 LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
   int i;
   lua_State *L;
   global_State *g;
-  LG *l = cast(LG *, (*f)(ud, NULL, LUA_TTHREAD, sizeof(LG)));
+  LG *l = cast(LG *, (*f)(ud, NULL, LUA_TTHREAD, sizeof(LG)));  // 初始化LG
   if (l == NULL) return NULL;
   L = &l->l.l;
   g = &l->g;
@@ -329,7 +333,7 @@ LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
   g->gcpause = LUAI_GCPAUSE;
   g->gcstepmul = LUAI_GCMUL;
   for (i=0; i < LUA_NUMTAGS; i++) g->mt[i] = NULL;
-  if (luaD_rawrunprotected(L, f_luaopen, NULL) != LUA_OK) {
+  if (luaD_rawrunprotected(L, f_luaopen, NULL) != LUA_OK) { //r1
     /* memory allocation error: free partial state */
     close_state(L);
     L = NULL;

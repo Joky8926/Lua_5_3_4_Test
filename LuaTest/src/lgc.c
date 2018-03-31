@@ -673,7 +673,7 @@ static void clearvalues (global_State *g, GCObject *l, GCObject *f) {
   }
 }
 
-
+//r1
 void luaC_upvdeccount (lua_State *L, UpVal *uv) {
   lua_assert(uv->refcount > 0);
   uv->refcount--;
@@ -681,7 +681,7 @@ void luaC_upvdeccount (lua_State *L, UpVal *uv) {
     luaM_free(L, uv);
 }
 
-
+//r1
 static void freeLclosure (lua_State *L, LClosure *cl) {
   int i;
   for (i = 0; i < cl->nupvalues; i++) {
@@ -692,12 +692,12 @@ static void freeLclosure (lua_State *L, LClosure *cl) {
   luaM_freemem(L, cl, sizeLclosure(cl->nupvalues));
 }
 
-
+//r1
 static void freeobj (lua_State *L, GCObject *o) {
   switch (o->tt) {
     case LUA_TPROTO: luaF_freeproto(L, gco2p(o)); break;
     case LUA_TLCL: {
-      freeLclosure(L, gco2lcl(o));
+      freeLclosure(L, gco2lcl(o));//r1
       break;
     }
     case LUA_TCCL: {
@@ -731,6 +731,7 @@ static GCObject **sweeplist (lua_State *L, GCObject **p, lu_mem count);
 ** collection cycle. Return where to continue the traversal or NULL if
 ** list is finished.
 */
+//r1
 static GCObject **sweeplist (lua_State *L, GCObject **p, lu_mem count) {
   global_State *g = G(L);
   int ow = otherwhite(g);
@@ -740,7 +741,7 @@ static GCObject **sweeplist (lua_State *L, GCObject **p, lu_mem count) {
     int marked = curr->marked;
     if (isdeadm(ow, marked)) {  /* is 'curr' dead? */
       *p = curr->next;  /* remove 'curr' from list */
-      freeobj(L, curr);  /* erase 'curr' */
+      freeobj(L, curr);  /* erase 'curr' */ //r1
     }
     else {  /* change mark to 'white' */
       curr->marked = cast_byte((marked & maskcolors) | white);
@@ -955,11 +956,12 @@ static void setpause (global_State *g) {
 ** not need to skip objects created between "now" and the start of the
 ** real sweep.
 */
+//r1
 static void entersweep (lua_State *L) {
   global_State *g = G(L);
   g->gcstate = GCSswpallgc;
   lua_assert(g->sweepgc == NULL);
-  g->sweepgc = sweeplist(L, &g->allgc, 1);
+  g->sweepgc = sweeplist(L, &g->allgc, 1);  //r1
 }
 
 
@@ -1155,12 +1157,13 @@ void luaC_step (lua_State *L) {
 ** to sweep all objects to turn them back to white (as white has not
 ** changed, nothing will be collected).
 */
+//r1
 void luaC_fullgc (lua_State *L, int isemergency) {
   global_State *g = G(L);
   lua_assert(g->gckind == KGC_NORMAL);
   if (isemergency) g->gckind = KGC_EMERGENCY;  /* set flag */
   if (keepinvariant(g)) {  /* black objects? */
-    entersweep(L); /* sweep everything to turn them back to white */
+    entersweep(L); /* sweep everything to turn them back to white */    //r1
   }
   /* finish any pending sweep phase to start a new cycle */
   luaC_runtilstate(L, bitmask(GCSpause));

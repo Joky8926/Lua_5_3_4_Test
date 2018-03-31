@@ -16,7 +16,7 @@ int main()
     cout << "abc:" << time(NULL) << endl;
 
     char *file = "my.lua";
-    lua_State *L = luaL_newstate();
+    lua_State *L = luaL_newstate(); // r1
     luaL_openlibs(L);
     luaL_dofile(L, file);
 

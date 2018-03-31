@@ -124,6 +124,7 @@ typedef struct lua_TValue {
 
 
 /* raw type tag of a TValue */
+// TValue的原始类型标记
 #define rttype(o)	((o)->tt_)
 
 /* tag with no variants (bits 0-3) */
@@ -164,6 +165,7 @@ typedef struct lua_TValue {
 #define fltvalue(o)	check_exp(ttisfloat(o), val_(o).n)
 #define nvalue(o)	check_exp(ttisnumber(o), \
 	(ttisinteger(o) ? cast_num(ivalue(o)) : fltvalue(o)))
+// 获得gc对象
 #define gcvalue(o)	check_exp(iscollectable(o), val_(o).gc)
 #define pvalue(o)	check_exp(ttislightuserdata(o), val_(o).p)
 #define tsvalue(o)	check_exp(ttisstring(o), gco2ts(val_(o).gc))
@@ -180,13 +182,14 @@ typedef struct lua_TValue {
 
 #define l_isfalse(o)	(ttisnil(o) || (ttisboolean(o) && bvalue(o) == 0))
 
-
+// 判断是否可回收
 #define iscollectable(o)	(rttype(o) & BIT_ISCOLLECTABLE)
 
 
 /* Macros for internal tests */
 #define righttt(obj)		(ttype(obj) == gcvalue(obj)->tt)
 
+// 检测obj是否存活
 #define checkliveness(L,obj) \
 	lua_longassert(!iscollectable(obj) || \
 		(righttt(obj) && (L == NULL || !isdead(G(L),gcvalue(obj)))))
@@ -207,6 +210,7 @@ typedef struct lua_TValue {
 #define chgivalue(obj,x) \
   { TValue *io=(obj); lua_assert(ttisinteger(io)); val_(io).i=(x); }
 
+// 将nil赋值给obj
 #define setnilvalue(obj) settt_(obj, LUA_TNIL)
 
 #define setfvalue(obj,x) \
@@ -222,6 +226,7 @@ typedef struct lua_TValue {
   { TValue *io = (obj); GCObject *i_g=(x); \
     val_(io).gc = i_g; settt_(io, ctb(i_g->tt)); }
 
+// 将字符串x赋值给obj
 #define setsvalue(L,obj,x) \
   { TValue *io = (obj); TString *x_ = (x); \
     val_(io).gc = obj2gco(x_); settt_(io, ctb(x_->tt)); \
@@ -255,7 +260,7 @@ typedef struct lua_TValue {
 #define setdeadvalue(obj)	settt_(obj, LUA_TDEADKEY)
 
 
-
+// 将对象obj2赋值给obj1
 #define setobj(L,obj1,obj2) \
 	{ TValue *io1=(obj1); *io1 = *(obj2); \
 	  (void)L; checkliveness(L,io1); }
@@ -266,9 +271,11 @@ typedef struct lua_TValue {
 */
 
 /* from stack to (same) stack */
+// 赋值对象
 #define setobjs2s	setobj
 /* to stack (not from same stack) */
 #define setobj2s	setobj
+// 赋值字符串
 #define setsvalue2s	setsvalue
 #define sethvalue2s	sethvalue
 #define setptvalue2s	setptvalue
@@ -533,6 +540,7 @@ LUAI_DDEC const TValue luaO_nilobject_;
 LUAI_FUNC int luaO_int2fb (unsigned int x);
 LUAI_FUNC int luaO_fb2int (int x);
 LUAI_FUNC int luaO_utf8esc (char *buff, unsigned long x);
+// 返回ceil(log2(x))
 LUAI_FUNC int luaO_ceillog2 (unsigned int x);
 LUAI_FUNC void luaO_arith (lua_State *L, int op, const TValue *p1,
                            const TValue *p2, TValue *res);

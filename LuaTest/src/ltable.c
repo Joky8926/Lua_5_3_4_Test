@@ -304,7 +304,7 @@ static void setarrayvector (lua_State *L, Table *t, unsigned int size) {
   t->sizearray = size;
 }
 
-
+// r1
 static void setnodevector (lua_State *L, Table *t, unsigned int size) {
   if (size == 0) {  /* no elements to hash part? */
     t->node = cast(Node *, dummynode);  /* use common 'dummynode' */
@@ -315,7 +315,7 @@ static void setnodevector (lua_State *L, Table *t, unsigned int size) {
     int i;
     int lsize = luaO_ceillog2(size);
     if (lsize > MAXHBITS)
-      luaG_runerror(L, "table overflow");
+      luaG_runerror(L, "table overflow");//r1
     size = twoto(lsize);
     t->node = luaM_newvector(L, size, Node);
     for (i = 0; i < (int)size; i++) {
@@ -398,7 +398,7 @@ static void rehash (lua_State *L, Table *t, const TValue *ek) {
 ** }=============================================================
 */
 
-
+// r1
 Table *luaH_new (lua_State *L) {
   GCObject *o = luaC_newobj(L, LUA_TTABLE, sizeof(Table));
   Table *t = gco2t(o);
@@ -406,7 +406,7 @@ Table *luaH_new (lua_State *L) {
   t->flags = cast_byte(~0);
   t->array = NULL;
   t->sizearray = 0;
-  setnodevector(L, t, 0);
+  setnodevector(L, t, 0);   // r1
   return t;
 }
 

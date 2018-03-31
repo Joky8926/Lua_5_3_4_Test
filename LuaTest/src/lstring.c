@@ -45,7 +45,7 @@ int luaS_eqlngstr (TString *a, TString *b) {
      (memcmp(getstr(a), getstr(b), len) == 0));  /* equal contents */
 }
 
-
+// 生成hashKey
 unsigned int luaS_hash (const char *str, size_t l, unsigned int seed) {
   unsigned int h = seed ^ cast(unsigned int, l);
   size_t step = (l >> LUAI_HASHLIMIT) + 1;
@@ -129,6 +129,7 @@ void luaS_init (lua_State *L) {
 
 /*
 ** creates a new string object
+** 创建一个新的TString对象。
 */
 static TString *createstrobj (lua_State *L, size_t l, int tag, unsigned int h) {
   TString *ts;
@@ -143,7 +144,7 @@ static TString *createstrobj (lua_State *L, size_t l, int tag, unsigned int h) {
   return ts;
 }
 
-
+// 创建一个长字符串。
 TString *luaS_createlngstrobj (lua_State *L, size_t l) {
   TString *ts = createstrobj(L, l, LUA_TLNGSTR, G(L)->seed);
   ts->u.lnglen = l;
@@ -163,6 +164,7 @@ void luaS_remove (lua_State *L, TString *ts) {
 
 /*
 ** checks whether short string exists and reuses it or creates a new one
+** 检查是否存在短字符串。存在则重新使用它，否则创建一个新字符串。
 */
 static TString *internshrstr (lua_State *L, const char *str, size_t l) {
   TString *ts;
@@ -195,6 +197,7 @@ static TString *internshrstr (lua_State *L, const char *str, size_t l) {
 
 /*
 ** new string (with explicit length)
+** 创建一个固定长度的字符串。
 */
 TString *luaS_newlstr (lua_State *L, const char *str, size_t l) {
   if (l <= LUAI_MAXSHORTLEN)  /* short string? */

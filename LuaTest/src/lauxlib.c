@@ -1004,7 +1004,7 @@ LUALIB_API const char *luaL_gsub (lua_State *L, const char *s, const char *p,
   return lua_tostring(L, -1);
 }
 
-
+// ∑÷≈‰ƒ⁄¥Ê
 static void *l_alloc (void *ud, void *ptr, size_t osize, size_t nsize) {
   (void)ud; (void)osize;  /* not used */
   if (nsize == 0) {
@@ -1022,9 +1022,9 @@ static int panic (lua_State *L) {
   return 0;  /* return to Lua to abort */
 }
 
-
+// r1
 LUALIB_API lua_State *luaL_newstate (void) {
-  lua_State *L = lua_newstate(l_alloc, NULL);
+  lua_State *L = lua_newstate(l_alloc, NULL);   // r1
   if (L) lua_atpanic(L, &panic);
   return L;
 }

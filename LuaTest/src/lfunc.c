@@ -121,7 +121,7 @@ Proto *luaF_newproto (lua_State *L) {
   return f;
 }
 
-
+// 释放函数原型内存
 void luaF_freeproto (lua_State *L, Proto *f) {
   luaM_freearray(L, f->code, f->sizecode);
   luaM_freearray(L, f->p, f->sizep);

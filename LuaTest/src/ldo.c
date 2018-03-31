@@ -87,7 +87,7 @@ struct lua_longjmp {
   volatile int status;  /* error code */
 };
 
-
+// 设置错误对象
 static void seterrorobj (lua_State *L, int errcode, StkId oldtop) {
   switch (errcode) {
     case LUA_ERRMEM: {  /* memory error? */
@@ -106,7 +106,7 @@ static void seterrorobj (lua_State *L, int errcode, StkId oldtop) {
   L->top = oldtop + 1;
 }
 
-
+// 抛出异常
 l_noret luaD_throw (lua_State *L, int errcode) {
   if (L->errorJmp) {  /* thread has an error handler? */
     L->errorJmp->status = errcode;  /* set status */
@@ -173,13 +173,13 @@ static void correctstack (lua_State *L, TValue *oldstack) {
 /* some space for error handling */
 #define ERRORSTACKSIZE	(LUAI_MAXSTACK + 200)
 
-
+//r1
 void luaD_reallocstack (lua_State *L, int newsize) {
   TValue *oldstack = L->stack;
   int lim = L->stacksize;
   lua_assert(newsize <= LUAI_MAXSTACK || newsize == ERRORSTACKSIZE);
   lua_assert(L->stack_last - L->stack == L->stacksize - EXTRA_STACK);
-  luaM_reallocvector(L, L->stack, L->stacksize, newsize, TValue);
+  luaM_reallocvector(L, L->stack, L->stacksize, newsize, TValue);   // r1
   for (; lim < newsize; lim++)
     setnilvalue(L->stack + lim); /* erase new segment */
   L->stacksize = newsize;
@@ -187,7 +187,7 @@ void luaD_reallocstack (lua_State *L, int newsize) {
   correctstack(L, oldstack);
 }
 
-
+// r1
 void luaD_growstack (lua_State *L, int n) {
   int size = L->stacksize;
   if (size > LUAI_MAXSTACK)  /* error after extra size? */
@@ -198,7 +198,7 @@ void luaD_growstack (lua_State *L, int n) {
     if (newsize > LUAI_MAXSTACK) newsize = LUAI_MAXSTACK;
     if (newsize < needed) newsize = needed;
     if (newsize > LUAI_MAXSTACK) {  /* stack overflow? */
-      luaD_reallocstack(L, ERRORSTACKSIZE);
+      luaD_reallocstack(L, ERRORSTACKSIZE);//r1
       luaG_runerror(L, "stack overflow");
     }
     else
@@ -236,9 +236,9 @@ void luaD_shrinkstack (lua_State *L) {
     condmovestack(L,{},{});  /* (change only for debugging) */
 }
 
-
+//r1
 void luaD_inctop (lua_State *L) {
-  luaD_checkstack(L, 1);
+  luaD_checkstack(L, 1);//r1
   L->top++;
 }
 
